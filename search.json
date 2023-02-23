@@ -1,0 +1,247 @@
+[
+  {
+    "objectID": "PracticewRMD.html",
+    "href": "PracticewRMD.html",
+    "title": "Test601",
+    "section": "",
+    "text": "In this example we’ll walk you through how to make a vector and a dataframe in R.\nFirst you’ll start by making a vector and using the assignment operator to call it a name. Let’s create a vector with the family’s names and another for their ages:\n\nss_fam <- c(\"Justine\", \"Asher\", \"Oliver\")\nss_age <- c(37, 38, 2)\n\nBy printing these vectors we can see their contents:\n\nss_fam\n\n[1] \"Justine\" \"Asher\"   \"Oliver\" \n\nss_age\n\n[1] 37 38  2"
+  },
+  {
+    "objectID": "PracticewRMD.html#dataframes",
+    "href": "PracticewRMD.html#dataframes",
+    "title": "Test601",
+    "section": "Dataframes!",
+    "text": "Dataframes!\nWe can use these vectors to create a dataframe:\n\nss_fam_age <- data.frame(ss_fam, ss_age)\n\nWe can use the summary() function to view our new dataframe:\n\nsummary(ss_fam_age)\n\n    ss_fam              ss_age     \n Length:3           Min.   : 2.00  \n Class :character   1st Qu.:19.50  \n Mode  :character   Median :37.00  \n                    Mean   :25.67  \n                    3rd Qu.:37.50  \n                    Max.   :38.00  \n\nss_fam_age\n\n   ss_fam ss_age\n1 Justine     37\n2   Asher     38\n3  Oliver      2\n\n\nWe did it!"
+  },
+  {
+    "objectID": "posts/JustineShakespeare_Challenge1RR.html",
+    "href": "posts/JustineShakespeare_Challenge1RR.html",
+    "title": "Justine Shakespeare Challenge 1",
+    "section": "",
+    "text": "Code\nknitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)"
+  },
+  {
+    "objectID": "posts/JustineShakespeare_Challenge1RR.html#reading-in-the-data",
+    "href": "posts/JustineShakespeare_Challenge1RR.html#reading-in-the-data",
+    "title": "Justine Shakespeare Challenge 1",
+    "section": "Reading in the Data",
+    "text": "Reading in the Data\nFirst we’ll load the tidyverse package and use the read_csv() function to read in the dataset.\n\n\nCode\nlibrary(tidyverse)\nrr2012 <- read_csv(\"_data/railroad_2012_clean_county.csv\")\n\ngetwd()\n\n\n[1] \"/Users/justineshakespeare/601_Spring_2023/601_Spring_2023/posts\""
+  },
+  {
+    "objectID": "posts/JustineShakespeare_Challenge1RR.html#my-summary-of-the-data",
+    "href": "posts/JustineShakespeare_Challenge1RR.html#my-summary-of-the-data",
+    "title": "Justine Shakespeare Challenge 1",
+    "section": "My Summary of the Data",
+    "text": "My Summary of the Data\nThis dataframe contains information about employees at railroads by county and state. Given the title of the CSV file, we can likely assume the data is from 2012.\nUsing the glimpse() function we can see below that the dataframe has 2,930 rows and 3 columns/variables. The first two variables, state and county, are character variables, while the last variable, total_employees, is a double variable, which is numeric.\n\n\nCode\nglimpse(rr2012)\n\n\nRows: 2,930\nColumns: 3\n$ state           <chr> \"AE\", \"AK\", \"AK\", \"AK\", \"AK\", \"AK\", \"AK\", \"AL\", \"AL\", …\n$ county          <chr> \"APO\", \"ANCHORAGE\", \"FAIRBANKS NORTH STAR\", \"JUNEAU\", …\n$ total_employees <dbl> 2, 7, 2, 3, 2, 1, 88, 102, 143, 1, 25, 154, 13, 29, 45…\n\n\nUsing the summary() function we can see that the minimum number of employees in an observation is 1, the maximum is 8207, and the average number of employees is a little over 87.\n\n\nCode\nsummary(rr2012)\n\n\n    state              county          total_employees  \n Length:2930        Length:2930        Min.   :   1.00  \n Class :character   Class :character   1st Qu.:   7.00  \n Mode  :character   Mode  :character   Median :  21.00  \n                                       Mean   :  87.18  \n                                       3rd Qu.:  65.00  \n                                       Max.   :8207.00"
+  },
+  {
+    "objectID": "posts/JustineShakespeare_Challenge1RR.html#analysis-counties-and-states-with-the-most-railroad-employees",
+    "href": "posts/JustineShakespeare_Challenge1RR.html#analysis-counties-and-states-with-the-most-railroad-employees",
+    "title": "Justine Shakespeare Challenge 1",
+    "section": "Analysis: Counties and States with the Most Railroad Employees",
+    "text": "Analysis: Counties and States with the Most Railroad Employees\nThis dataset could answer quite a few questions related to the number of railroad employees by county and state in the United States.\nFor example, we can use pipes and the arrange() function in R to see which counties have the most railroad employees:\n\n\nCode\nrr2012 %>% \n  arrange(desc(total_employees))\n\n\n# A tibble: 2,930 × 3\n   state county           total_employees\n   <chr> <chr>                      <dbl>\n 1 IL    COOK                        8207\n 2 TX    TARRANT                     4235\n 3 NE    DOUGLAS                     3797\n 4 NY    SUFFOLK                     3685\n 5 VA    INDEPENDENT CITY            3249\n 6 FL    DUVAL                       3073\n 7 CA    SAN BERNARDINO              2888\n 8 CA    LOS ANGELES                 2545\n 9 TX    HARRIS                      2535\n10 NE    LINCOLN                     2289\n# … with 2,920 more rows\n\n\nThis shows that Cook county in Illinois has the most railroad employees. Given that the major city, Chicago is located in Cook County, this is not necessarily surprising. It is interesting that Cook county has almost twice as many railroad employees as the next county on the list, Tarrant county in Texas. It would be worth doing further research to understand why Chicago of all cities in the United States has the most railroad employees, and why there are so many more than in other cities.\nThis data can also shed light on which states have the most railroad employees. We can use pipes and several functions, including the group_by(), summarize(), sum() and arrange() functions to show the states with the most railroad employees:\n\n\nCode\nemployees_by_state <- rr2012 %>% \n  group_by(state) %>% \n  summarize(total_state_employees=sum(total_employees))\n\nemployees_by_state %>% \n  arrange(desc(total_state_employees))\n\n\n# A tibble: 53 × 2\n   state total_state_employees\n   <chr>                 <dbl>\n 1 TX                    19839\n 2 IL                    19131\n 3 NY                    17050\n 4 NE                    13176\n 5 CA                    13137\n 6 PA                    12769\n 7 OH                     9056\n 8 GA                     8605\n 9 IN                     8537\n10 MO                     8419\n# … with 43 more rows\n\n\nThis shows that Texas is the state with the most railroad employees.\n\nFurther Analysis\nIt would be interesting to look at this data alongside data about the total population in each state, to get a sense of the percentage of the overall population in each state that works at the railroad.\nYou could continue to explore this dataset and determine other interesting facts about railroad employees in the United States, such as which state had the highest average number of railroad employees in each county. You could also explore the counties and states with the fewest number of railroad employees."
+  },
+  {
+    "objectID": "posts/challenge1_Shakespeare.html",
+    "href": "posts/challenge1_Shakespeare.html",
+    "title": "J Shakespeare Challenge 1",
+    "section": "",
+    "text": "Code\nknitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)"
+  },
+  {
+    "objectID": "posts/challenge1_Shakespeare.html#my-summary-of-the-data",
+    "href": "posts/challenge1_Shakespeare.html#my-summary-of-the-data",
+    "title": "J Shakespeare Challenge 1",
+    "section": "My Summary of the Data",
+    "text": "My Summary of the Data\nThis dataframe contains information about employees at railroads by county and state. Given the title of the CSV file, we can likely assume the data is from 2012.\nUsing the glimpse() function we can see below that the dataframe has 2,930 rows and 3 columns/variables. The first two variables, state and county, are character variables, while the last variable, total_employees, is a double variable, which is numeric.\n\n\nCode\nglimpse(rr2012)\n\n\nRows: 2,930\nColumns: 3\n$ state           <chr> \"AE\", \"AK\", \"AK\", \"AK\", \"AK\", \"AK\", \"AK\", \"AL\", \"AL\", …\n$ county          <chr> \"APO\", \"ANCHORAGE\", \"FAIRBANKS NORTH STAR\", \"JUNEAU\", …\n$ total_employees <dbl> 2, 7, 2, 3, 2, 1, 88, 102, 143, 1, 25, 154, 13, 29, 45…\n\n\nUsing the summary() function we can see that the minimum number of employees in an observation is 1, the maximum is 8207, and the average number of employees is a little over 87.\n\n\nCode\nsummary(rr2012)\n\n\n    state              county          total_employees  \n Length:2930        Length:2930        Min.   :   1.00  \n Class :character   Class :character   1st Qu.:   7.00  \n Mode  :character   Mode  :character   Median :  21.00  \n                                       Mean   :  87.18  \n                                       3rd Qu.:  65.00  \n                                       Max.   :8207.00"
+  },
+  {
+    "objectID": "posts/challenge1_Shakespeare.html#analysis-counties-and-states-with-the-most-railroad-employees",
+    "href": "posts/challenge1_Shakespeare.html#analysis-counties-and-states-with-the-most-railroad-employees",
+    "title": "J Shakespeare Challenge 1",
+    "section": "Analysis: Counties and States with the Most Railroad Employees",
+    "text": "Analysis: Counties and States with the Most Railroad Employees\nThis dataset could answer quite a few questions related to the number of railroad employees by county and state in the United States.\nFor example, we can use pipes and the arrange() function in R to see which counties have the most railroad employees:\n\n\nCode\nrr2012 %>% \n  arrange(desc(total_employees))\n\n\n# A tibble: 2,930 × 3\n   state county           total_employees\n   <chr> <chr>                      <dbl>\n 1 IL    COOK                        8207\n 2 TX    TARRANT                     4235\n 3 NE    DOUGLAS                     3797\n 4 NY    SUFFOLK                     3685\n 5 VA    INDEPENDENT CITY            3249\n 6 FL    DUVAL                       3073\n 7 CA    SAN BERNARDINO              2888\n 8 CA    LOS ANGELES                 2545\n 9 TX    HARRIS                      2535\n10 NE    LINCOLN                     2289\n# … with 2,920 more rows\n\n\nThis shows that Cook county in Illinois has the most railroad employees. Given that the major city, Chicago is located in Cook County, this is not necessarily surprising. It is interesting that Cook county has almost twice as many railroad employees as the next county on the list, Tarrant county in Texas. It would be worth doing further research to understand why Chicago of all cities in the United States has the most railroad employees, and why there are so many more than in other cities.\nThis data can also shed light on which states have the most railroad employees. We can use pipes and several functions, including the group_by(), summarize(), sum() and arrange() functions to show the states with the most railroad employees:\n\n\nCode\nemployees_by_state <- rr2012 %>% \n  group_by(state) %>% \n  summarize(total_state_employees=sum(total_employees))\n\nemployees_by_state %>% \n  arrange(desc(total_state_employees))\n\n\n# A tibble: 53 × 2\n   state total_state_employees\n   <chr>                 <dbl>\n 1 TX                    19839\n 2 IL                    19131\n 3 NY                    17050\n 4 NE                    13176\n 5 CA                    13137\n 6 PA                    12769\n 7 OH                     9056\n 8 GA                     8605\n 9 IN                     8537\n10 MO                     8419\n# … with 43 more rows\n\n\nThis shows that Texas is the state with the most railroad employees.\n\nFurther Analysis\nIt would be interesting to look at this data alongside data about the total population in each state, to get a sense of the percentage of the overall population in each state that works at the railroad.\nYou could continue to explore this dataset and determine other interesting facts about railroad employees in the United States, such as which state had the highest average number of railroad employees in each county. You could also explore the counties and states with the fewest number of railroad employees."
+  },
+  {
+    "objectID": "posts/JustineShakespeare_Challenge1.html",
+    "href": "posts/JustineShakespeare_Challenge1.html",
+    "title": "Challenge 1 - Railroad Employment",
+    "section": "",
+    "text": "Code\nknitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)"
+  },
+  {
+    "objectID": "posts/JustineShakespeare_Challenge1.html#reading-in-the-data",
+    "href": "posts/JustineShakespeare_Challenge1.html#reading-in-the-data",
+    "title": "Challenge 1 - Railroad Employment",
+    "section": "Reading in the Data",
+    "text": "Reading in the Data\nFirst we’ll load the tidyverse and readxl packages and use the read_excel() function to read in the dataset. When I first loaded this dataset I noted that the data started on the third row, so I’ll specify that R should skip the first two lines when I import the data.\n\n\nCode\nlibrary(tidyverse)\nlibrary(readxl)\n\nRailroadEmployment <- read_excel(\"_data/StateCounty2012.xls\", skip=2)"
+  },
+  {
+    "objectID": "posts/JustineShakespeare_Challenge1.html#data-description",
+    "href": "posts/JustineShakespeare_Challenge1.html#data-description",
+    "title": "Challenge 1 - Railroad Employment",
+    "section": "Data Description",
+    "text": "Data Description\nThis dataset contains information about the number of railroad employees by county and state in 2012. In these data, rows are individual counties and columns are the state, country, and number of employees. It is not clear from the dataset itself where this data is from/who published it."
+  },
+  {
+    "objectID": "posts/JustineShakespeare_Challenge1.html#data-cleaning",
+    "href": "posts/JustineShakespeare_Challenge1.html#data-cleaning",
+    "title": "Challenge 1 - Railroad Employment",
+    "section": "Data Cleaning",
+    "text": "Data Cleaning\nBefore summarizing the data, we’ll tidy it up a bit. Using the head() function we can see that the dataset includes 5 columns, but data is stored in only three.\n\n\nCode\nhead(RailroadEmployment)\n\n\n# A tibble: 6 × 5\n  STATE     ...2  COUNTY               ...4  TOTAL\n  <chr>     <lgl> <chr>                <lgl> <dbl>\n1 AE        NA    APO                  NA        2\n2 AE Total1 NA    <NA>                 NA        2\n3 AK        NA    ANCHORAGE            NA        7\n4 AK        NA    FAIRBANKS NORTH STAR NA        2\n5 AK        NA    JUNEAU               NA        3\n6 AK        NA    MATANUSKA-SUSITNA    NA        2\n\n\nWe can use the select() function to isolate only the columns with data and assign these to a new dataframe in R. We’ll use head() to check our work.\n\n\nCode\nRailroadEmployment <- select(RailroadEmployment, STATE, COUNTY, TOTAL)\n\nhead(RailroadEmployment)\n\n\n# A tibble: 6 × 3\n  STATE     COUNTY               TOTAL\n  <chr>     <chr>                <dbl>\n1 AE        APO                      2\n2 AE Total1 <NA>                     2\n3 AK        ANCHORAGE                7\n4 AK        FAIRBANKS NORTH STAR     2\n5 AK        JUNEAU                   3\n6 AK        MATANUSKA-SUSITNA        2\n\n\nUsing the n_distinct() function we can see that there are 111 distinct values in the STATE column. Since we know there are 50 states in the US, this indicates there are some additional values that we may not have expected or want to keep for analysis.\n\n\nCode\nRailroadEmployment %>%\n  select(STATE)%>%\n  n_distinct(.)\n\n\n[1] 111\n\n\nWe can use piping and the functions group_by(), summarize(), and print() to inspect the values of the STATE column more closely to get an idea of what is stored here.\n\n\nCode\nRailroadEmployment %>% \n  group_by(STATE) %>% \n  summarize(mean(TOTAL)) %>% \n  print(n=111)\n\n\n# A tibble: 111 × 2\n    STATE                                               `mean(TOTAL)`\n    <chr>                                                       <dbl>\n  1 1  Military designation.                                    NA   \n  2 AE                                                           2   \n  3 AE Total1                                                    2   \n  4 AK                                                          17.2 \n  5 AK Total                                                   103   \n  6 AL                                                          63.5 \n  7 AL Total                                                  4257   \n  8 AP                                                           1   \n  9 AP Total1                                                    1   \n 10 AR                                                          53.8 \n 11 AR Total                                                  3871   \n 12 AZ                                                         210.  \n 13 AZ Total                                                  3153   \n 14 CA                                                         239.  \n 15 CA Total                                                 13137   \n 16 CANADA                                                     662   \n 17 CO                                                          64.0 \n 18 CO Total                                                  3650   \n 19 CT                                                         324   \n 20 CT Total                                                  2592   \n 21 DC                                                         279   \n 22 DC Total                                                   279   \n 23 DE                                                         498.  \n 24 DE Total                                                  1495   \n 25 FL                                                         111.  \n 26 FL Total                                                  7419   \n 27 GA                                                          56.6 \n 28 GA Total                                                  8605   \n 29 Grand Total                                             255432   \n 30 HI                                                           1.33\n 31 HI Total                                                     4   \n 32 IA                                                          40.6 \n 33 IA Total                                                  4019   \n 34 ID                                                          43.4 \n 35 ID Total                                                  1563   \n 36 IL                                                         186.  \n 37 IL Total                                                 19131   \n 38 IN                                                          92.8 \n 39 IN Total                                                  8537   \n 40 KS                                                          64.1 \n 41 KS Total                                                  6092   \n 42 KY                                                          40.4 \n 43 KY Total                                                  4811   \n 44 LA                                                          62.1 \n 45 LA Total                                                  3915   \n 46 MA                                                         282.  \n 47 MA Total                                                  3379   \n 48 MD                                                         196.  \n 49 MD Total                                                  4709   \n 50 ME                                                          40.9 \n 51 ME Total                                                   654   \n 52 MI                                                          50.4 \n 53 MI Total                                                  3932   \n 54 MN                                                          63.6 \n 55 MN Total                                                  5467   \n 56 MO                                                          73.2 \n 57 MO Total                                                  8419   \n 58 MS                                                          27.1 \n 59 MS Total                                                  2111   \n 60 MT                                                          62.8 \n 61 MT Total                                                  3327   \n 62 NC                                                          33.4 \n 63 NC Total                                                  3143   \n 64 ND                                                          45.0 \n 65 ND Total                                                  2204   \n 66 NE                                                         148.  \n 67 NE Total                                                 13176   \n 68 NH                                                          39.3 \n 69 NH Total                                                   393   \n 70 NJ                                                         397.  \n 71 NJ Total                                                  8329   \n 72 NM                                                          67.5 \n 73 NM Total                                                  1958   \n 74 NOTE:  Excludes 2,896 employees without an address.         NA   \n 75 NV                                                          62.2 \n 76 NV Total                                                   746   \n 77 NY                                                         280.  \n 78 NY Total                                                 17050   \n 79 OH                                                         103.  \n 80 OH Total                                                  9056   \n 81 OK                                                          31.8 \n 82 OK Total                                                  2318   \n 83 OR                                                          70.4 \n 84 OR Total                                                  2322   \n 85 PA                                                         196.  \n 86 PA Total                                                 12769   \n 87 RI                                                          97.4 \n 88 RI Total                                                   487   \n 89 SC                                                          49.9 \n 90 SC Total                                                  2296   \n 91 SD                                                          18.2 \n 92 SD Total                                                   949   \n 93 TN                                                          54.4 \n 94 TN Total                                                  4952   \n 95 TX                                                          89.8 \n 96 TX Total                                                 19839   \n 97 UT                                                          76.7 \n 98 UT Total                                                  1917   \n 99 VA                                                          82.1 \n100 VA Total                                                  7551   \n101 VT                                                          18.5 \n102 VT Total                                                   259   \n103 WA                                                         134.  \n104 WA Total                                                  5222   \n105 WI                                                          54.7 \n106 WI Total                                                  3773   \n107 WV                                                          60.6 \n108 WV Total                                                  3213   \n109 WY                                                         131.  \n110 WY Total                                                  2876   \n111 <NA>                                                        NA   \n\n\nThere are a few issues we see here: It looks as if there are Total rows in this dataset - that is, there are rows that add up the total for each state. We don’t need those in our data, since we can use R functions to total employees by state. It also looks as if CANADA is listed as a state. Assuming we are only interested in the US, let’s remove that as well.\nWe can use the filter() and grepl() function to remove both the total rows and Canada from this dataset.\n\n\nCode\nRailroadEmployment <- RailroadEmployment %>% \n  filter(!grepl(\"Total\", STATE))\n\nRailroadEmployment <- RailroadEmployment %>% \n  filter(!grepl(\"CANADA\", STATE))\n\n\nFinally, we noticed we had some NAs in both the STATE and the TOTAL columns. We can use the na.omit() function to remove these from the dataset.\n\n\nCode\nRailroadEmployment <- print(na.omit(RailroadEmployment))\n\n\n# A tibble: 2,930 × 3\n   STATE COUNTY               TOTAL\n   <chr> <chr>                <dbl>\n 1 AE    APO                      2\n 2 AK    ANCHORAGE                7\n 3 AK    FAIRBANKS NORTH STAR     2\n 4 AK    JUNEAU                   3\n 5 AK    MATANUSKA-SUSITNA        2\n 6 AK    SITKA                    1\n 7 AK    SKAGWAY MUNICIPALITY    88\n 8 AL    AUTAUGA                102\n 9 AL    BALDWIN                143\n10 AL    BARBOUR                  1\n# … with 2,920 more rows\n\n\nLet’s run the same code chunk from earlier to check that our edits have been made and the data is clean.\n\n\nCode\nRailroadEmployment %>% \n  group_by(STATE) %>% \n  summarize(mean(TOTAL)) %>% \n  print(n=111)\n\n\n# A tibble: 53 × 2\n   STATE `mean(TOTAL)`\n   <chr>         <dbl>\n 1 AE             2   \n 2 AK            17.2 \n 3 AL            63.5 \n 4 AP             1   \n 5 AR            53.8 \n 6 AZ           210.  \n 7 CA           239.  \n 8 CO            64.0 \n 9 CT           324   \n10 DC           279   \n11 DE           498.  \n12 FL           111.  \n13 GA            56.6 \n14 HI             1.33\n15 IA            40.6 \n16 ID            43.4 \n17 IL           186.  \n18 IN            92.8 \n19 KS            64.1 \n20 KY            40.4 \n21 LA            62.1 \n22 MA           282.  \n23 MD           196.  \n24 ME            40.9 \n25 MI            50.4 \n26 MN            63.6 \n27 MO            73.2 \n28 MS            27.1 \n29 MT            62.8 \n30 NC            33.4 \n31 ND            45.0 \n32 NE           148.  \n33 NH            39.3 \n34 NJ           397.  \n35 NM            67.5 \n36 NV            62.2 \n37 NY           280.  \n38 OH           103.  \n39 OK            31.8 \n40 OR            70.4 \n41 PA           196.  \n42 RI            97.4 \n43 SC            49.9 \n44 SD            18.2 \n45 TN            54.4 \n46 TX            89.8 \n47 UT            76.7 \n48 VA            82.1 \n49 VT            18.5 \n50 WA           134.  \n51 WI            54.7 \n52 WV            60.6 \n53 WY           131.  \n\n\nThis is more like it! Now we have only 53 distinct values listed in the STATE columns: the 50 states, Washington DC (listed as DC), and two overseas military designations (listed as AE and AP)\nLet’s move on to summarizing the data."
+  },
+  {
+    "objectID": "posts/JustineShakespeare_Challenge1.html#data-summary",
+    "href": "posts/JustineShakespeare_Challenge1.html#data-summary",
+    "title": "Challenge 1 - Railroad Employment",
+    "section": "Data Summary",
+    "text": "Data Summary\nUsing the dim() function we can see below that the dataframe has 2,930 rows/observations and 3 columns/variables.\n\n\nCode\ndim(RailroadEmployment)\n\n\n[1] 2930    3\n\n\nWe can use the head() function to see more information about this dataset, including the column names, and the type of data stored in each column. The first two columns, STATE and COUNTY, are character variables, while the last column, TOTAL, is a double variable, which means it contains numeric data.\n\n\nCode\nhead(RailroadEmployment)\n\n\n# A tibble: 6 × 3\n  STATE COUNTY               TOTAL\n  <chr> <chr>                <dbl>\n1 AE    APO                      2\n2 AK    ANCHORAGE                7\n3 AK    FAIRBANKS NORTH STAR     2\n4 AK    JUNEAU                   3\n5 AK    MATANUSKA-SUSITNA        2\n6 AK    SITKA                    1\n\n\nUsing the summary() function we can see that the minimum number of employees in county is 1, the maximum is 8207, the median is 21 employees, and the mean is a little over 87 employees.\n\n\nCode\nsummary(RailroadEmployment)\n\n\n    STATE              COUNTY              TOTAL        \n Length:2930        Length:2930        Min.   :   1.00  \n Class :character   Class :character   1st Qu.:   7.00  \n Mode  :character   Mode  :character   Median :  21.00  \n                                       Mean   :  87.18  \n                                       3rd Qu.:  65.00  \n                                       Max.   :8207.00  \n\n\nLet’s take a closer look at this dataset to get a sense of which county and which state each have the most railraod employees. We can use piping and the arrange() function in R to see which counties have the most railroad employees:\n\n\nCode\nRailroadEmployment %>% \n  arrange(desc(TOTAL))\n\n\n# A tibble: 2,930 × 3\n   STATE COUNTY           TOTAL\n   <chr> <chr>            <dbl>\n 1 IL    COOK              8207\n 2 TX    TARRANT           4235\n 3 NE    DOUGLAS           3797\n 4 NY    SUFFOLK           3685\n 5 VA    INDEPENDENT CITY  3249\n 6 FL    DUVAL             3073\n 7 CA    SAN BERNARDINO    2888\n 8 CA    LOS ANGELES       2545\n 9 TX    HARRIS            2535\n10 NE    LINCOLN           2289\n# … with 2,920 more rows\n\n\nThis shows that Cook County in Illinois has the most railroad employees. Given that the major city, Chicago is located in Cook County, this is not surprising. It is interesting that Cook county has almost twice as many railroad employees as the next county on the list, Tarrant county in Texas.\nThis data can also shed light on which states have the most railroad employees. We can use piping and the group_by(), summarize(), sum() and arrange() functions to show the states with the most railroad employees:\n\n\nCode\nemployees_by_state <- RailroadEmployment %>% \n  group_by(STATE) %>% \n  summarize(total_state_employees=sum(TOTAL))\n\nemployees_by_state %>% \n  arrange(desc(total_state_employees))\n\n\n# A tibble: 53 × 2\n   STATE total_state_employees\n   <chr>                 <dbl>\n 1 TX                    19839\n 2 IL                    19131\n 3 NY                    17050\n 4 NE                    13176\n 5 CA                    13137\n 6 PA                    12769\n 7 OH                     9056\n 8 GA                     8605\n 9 IN                     8537\n10 MO                     8419\n# … with 43 more rows\n\n\nThis shows that Texas is the state with the most railroad employees."
+  },
+  {
+    "objectID": "posts/JustineShakespeare_challenge2.html",
+    "href": "posts/JustineShakespeare_challenge2.html",
+    "title": "Challenge 2 -??????",
+    "section": "",
+    "text": "Code\nlibrary(tidyverse)\n\nknitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)"
+  },
+  {
+    "objectID": "posts/JustineShakespeare_challenge2.html#challenge-overview",
+    "href": "posts/JustineShakespeare_challenge2.html#challenge-overview",
+    "title": "Challenge 2 -??????",
+    "section": "Challenge Overview",
+    "text": "Challenge Overview\nToday’s challenge is to\n\nread in a data set, and describe the data using both words and any supporting information (e.g., tables, etc)\nprovide summary statistics for different interesting groups within the data, and interpret those statistics"
+  },
+  {
+    "objectID": "posts/JustineShakespeare_challenge2.html#read-in-the-data",
+    "href": "posts/JustineShakespeare_challenge2.html#read-in-the-data",
+    "title": "Challenge 2 -??????",
+    "section": "Read in the Data",
+    "text": "Read in the Data\nRead in one (or more) of the following data sets, available in the posts/_data folder, using the correct R package and command.\n\nrailroad*.csv or StateCounty2012.xls ⭐\nFAOstat*.csv or birds.csv ⭐⭐⭐\nhotel_bookings.csv ⭐⭐⭐⭐\n\n\n\n\nAdd any comments or documentation as needed. More challenging data may require additional code chunks and documentation."
+  },
+  {
+    "objectID": "posts/JustineShakespeare_challenge2.html#describe-the-data",
+    "href": "posts/JustineShakespeare_challenge2.html#describe-the-data",
+    "title": "Challenge 2 -??????",
+    "section": "Describe the data",
+    "text": "Describe the data\nUsing a combination of words and results of R commands, can you provide a high level description of the data? Describe as efficiently as possible where/how the data was (likely) gathered, indicate the cases and variables (both the interpretation and any details you deem useful to the reader to fully understand your chosen data)."
+  },
+  {
+    "objectID": "posts/JustineShakespeare_challenge2.html#provide-grouped-summary-statistics",
+    "href": "posts/JustineShakespeare_challenge2.html#provide-grouped-summary-statistics",
+    "title": "Challenge 2 -??????",
+    "section": "Provide Grouped Summary Statistics",
+    "text": "Provide Grouped Summary Statistics\nConduct some exploratory data analysis, using dplyr commands such as group_by(), select(), filter(), and summarise(). Find the central tendency (mean, median, mode) and dispersion (standard deviation, mix/max/quantile) for different subgroups within the data set.\n\n\n\n\nExplain and Interpret\nBe sure to explain why you choose a specific group. Comment on the interpretation of any interesting differences between groups that you uncover. This section can be integrated with the exploratory data analysis, just be sure it is included."
+  },
+  {
+    "objectID": "posts/JustineShakespeare_challenge2.html#analysis-counties-and-states-with-the-most-railroad-employees",
+    "href": "posts/JustineShakespeare_challenge2.html#analysis-counties-and-states-with-the-most-railroad-employees",
+    "title": "Challenge 2 -??????",
+    "section": "Analysis: Counties and States with the Most Railroad Employees",
+    "text": "Analysis: Counties and States with the Most Railroad Employees\nThis dataset could answer quite a few questions related to the number of railroad employees by county and state in the United States.\nFor example, we can use pipes and the arrange() function in R to see which counties have the most railroad employees:\n\n\nCode\nRailroadEmployment %>% \n  arrange(desc(TOTAL))\n\n\nError in arrange(., desc(TOTAL)): object 'RailroadEmployment' not found\n\n\nThis shows that Cook county in Illinois has the most railroad employees. Given that the major city, Chicago is located in Cook County, this is not necessarily surprising. It is interesting that Cook county has almost twice as many railroad employees as the next county on the list, Tarrant county in Texas.\nThis data can also shed light on which states have the most railroad employees. We can use pipes and the group_by(), summarize(), sum() and arrange() functions to show the states with the most railroad employees:\n\n\nCode\nemployees_by_state <- RailroadEmployment %>% \n  group_by(STATE) %>% \n  summarize(total_state_employees=sum(TOTAL))\n\n\nError in group_by(., STATE): object 'RailroadEmployment' not found\n\n\nCode\nemployees_by_state %>% \n  arrange(desc(total_state_employees))\n\n\nError in arrange(., desc(total_state_employees)): object 'employees_by_state' not found\n\n\nThis shows that Texas is the state with the most railroad employees."
+  },
+  {
+    "objectID": "about/JustineShakespeare.html",
+    "href": "about/JustineShakespeare.html",
+    "title": "Justine Shakespeare",
+    "section": "",
+    "text": "I have a BA in Foreign Area Studies with a concentration in French History from Barnard College at Columbia University in New York City. I also have an MSc in European Studies from the London School of Economics. Before starting the DACSS program I worked for the international NGO Verite, where I specialized in leading research projects on forced labor, human trafficking, and the working conditions of migrant workers in global supply chains."
+  },
+  {
+    "objectID": "about/JustineShakespeare.html#r-experience",
+    "href": "about/JustineShakespeare.html#r-experience",
+    "title": "Justine Shakespeare",
+    "section": "R experience",
+    "text": "R experience\nI have taken a few R courses online and while at my job used R to analyze the results of surveys of migrant workers."
+  },
+  {
+    "objectID": "about/JustineShakespeare.html#research-interests",
+    "href": "about/JustineShakespeare.html#research-interests",
+    "title": "Justine Shakespeare",
+    "section": "Research interests",
+    "text": "Research interests\nComputational social science, network analysis, survey design, immigration, labor rights, reproductive health"
+  },
+  {
+    "objectID": "about/JustineShakespeare.html#hometown",
+    "href": "about/JustineShakespeare.html#hometown",
+    "title": "Justine Shakespeare",
+    "section": "Hometown",
+    "text": "Hometown\nMarlboro, Vermont"
+  },
+  {
+    "objectID": "about/JustineShakespeare.html#hobbies",
+    "href": "about/JustineShakespeare.html#hobbies",
+    "title": "Justine Shakespeare",
+    "section": "Hobbies",
+    "text": "Hobbies\nPottery, crossword puzzles, biking, and travel"
+  },
+  {
+    "objectID": "about/JustineShakespeare.html#fun-fact",
+    "href": "about/JustineShakespeare.html#fun-fact",
+    "title": "Justine Shakespeare",
+    "section": "Fun fact",
+    "text": "Fun fact\nI am named as an inventor on a patent for a technology platform that identifies human rights risks in labor supply chains."
+  },
+  {
+    "objectID": "about/about.html",
+    "href": "about/about.html",
+    "title": "Your Name",
+    "section": "",
+    "text": "##Instructions"
+  },
+  {
+    "objectID": "about/about.html#educationwork-background",
+    "href": "about/about.html#educationwork-background",
+    "title": "Your Name",
+    "section": "Education/Work Background",
+    "text": "Education/Work Background"
+  },
+  {
+    "objectID": "about/about.html#r-experience",
+    "href": "about/about.html#r-experience",
+    "title": "Your Name",
+    "section": "R experience",
+    "text": "R experience"
+  },
+  {
+    "objectID": "about/about.html#research-interests",
+    "href": "about/about.html#research-interests",
+    "title": "Your Name",
+    "section": "Research interests",
+    "text": "Research interests"
+  },
+  {
+    "objectID": "about/about.html#hometown",
+    "href": "about/about.html#hometown",
+    "title": "Your Name",
+    "section": "Hometown",
+    "text": "Hometown"
+  },
+  {
+    "objectID": "about/about.html#hobbies",
+    "href": "about/about.html#hobbies",
+    "title": "Your Name",
+    "section": "Hobbies",
+    "text": "Hobbies"
+  },
+  {
+    "objectID": "about/about.html#fun-fact",
+    "href": "about/about.html#fun-fact",
+    "title": "Your Name",
+    "section": "Fun fact",
+    "text": "Fun fact"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "DACSS 601: Data Science Fundamentals Spring-2023",
+    "section": "",
+    "text": "The blog posts here are contributed by students enrolled in DACSS 601, Fundamentals of Data Science. The course provides students with an introduction to R and the tidyverse, scientific publishing, and collaboration through GitHub, building a foundation for future coursework. Students also are introduced to general data management and data wrangling skills, with an emphasis on best practice workflows and tidy data management.\n\n\n\n\n\n\n\n\n\n\nJustine Shakespeare Challenge 1\n\n\n\n\n\n\n\nchallenge_1\n\n\nStateCounty\n\n\nJustine Shakespeare\n\n\n\n\n\n\n\n\n\n\n\nFeb 15, 2023\n\n\nJustine Shakespeare\n\n\n\n\n\n\n\n\nJ Shakespeare Challenge 1\n\n\n\n\n\n\n\nchallenge_1\n\n\nrailroads\n\n\nfaostat\n\n\nwildbirds\n\n\n\n\n\n\n\n\n\n\n\nFeb 15, 2023\n\n\nJustine Shakespeare\n\n\n\n\n\n\n\n\nChallenge 1 - Railroad Employment\n\n\n\n\n\n\n\nchallenge_1\n\n\nrailroads\n\n\nJustine Shakespeare\n\n\n\n\n\n\n\n\n\n\n\nFeb 15, 2023\n\n\nJustine Shakespeare\n\n\n\n\n\n\n\n\nChallenge 2 -??????\n\n\n\n\n\n\n\nchallenge_2\n\n\nrailroads\n\n\nfaostat\n\n\nhotel_bookings\n\n\n\n\n\n\n\n\n\n\n\nAug 16, 2022\n\n\nJustine Shakespeare\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "Contributors",
+    "section": "",
+    "text": "Find out more about our DACSS students who contributed to the blog.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nJustine Shakespeare\n\n\n\n\n\n\n\n\n\n\n\n\n\nYour Name\n\n\n\n\n\n\n\nNo matching items"
+  }
+]
